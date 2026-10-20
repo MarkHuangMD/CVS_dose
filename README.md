@@ -1,2 +1,2 @@
 # CVS_dose
-CVS_dose
+input BW
