@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CVS 常用泡法</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--text:#1c1e21;--muted:#6b7280;--accent:#d92d20;--line:#e5e7eb;--input:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111317;--card:#1b1e24;--text:#eceff4;--muted:#9aa3b2;--accent:#ff6b5e;--line:#2c313a;--input:#14171c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111317;--card:#1b1e24;--text:#eceff4;--muted:#9aa3b2;--accent:#ff6b5e;--line:#2c313a;--input:#14171c;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.25;font-size:13px}
+main{max-width:520px;margin:0 auto;padding:8px}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+h1{font-size:15px;margin:0;flex:1}
+.top label{font-weight:600}
+.top input{width:84px;font-size:20px;font-weight:700;padding:2px 8px;border:1px solid var(--line);border-radius:8px;background:var(--input);color:var(--text);text-align:right}
+.top span{color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:4px 6px;background:var(--bg)}
+th.r,td.r{text-align:right}
+td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.n{font-weight:700;font-size:14px}
+.s{color:var(--muted);font-size:10.5px}
+.v{color:var(--accent);font-weight:800;font-size:17px;font-variant-numeric:tabular-nums}
+.u{color:var(--muted);font-size:10px}
+.rm{font-size:11px}
+tr.sep td{background:var(--bg);color:var(--accent);font-weight:700;font-size:11px;padding:3px 6px}
+.note{color:var(--muted);font-size:10px;margin:6px 2px 0}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <h1>CVS 常用泡法</h1>
+  <label for="w">體重</label>
+  <input id="w" type="number" inputmode="decimal" min="1" max="300" step="0.1" value="62" aria-label="體重 kg">
+  <span>kg</span>
+</div>
+<table>
+  <thead><tr><th>藥名 / 配法</th><th class="r">mcg/kg/min<br>(每 1 ml/hr)</th><th>Remark</th></tr></thead>
+  <tbody id="tb"></tbody>
+</table>
+<p class="note">僅供參考，使用前請確認藥囑與濃度。只需體重。</p>
+</main>
+<script>
+var D=[
+ ["Dopamine","200mg D5W 50ml · 4000",4000,"低 0.5-2<br>中 2-10 高 >10"],
+ ["Levophed","4mg D5W 50ml · 80",80,"0.02-0.5"],
+ ["Epinephrine","5mg D5W 50ml · 100",100,"0.02-0.5"],
+ ["Dobutamine","250mg D5W 50ml · 5000",5000,"2-20"],
+ ["Primacor (2支)","20mg D5W 50ml · 400",400,"0.2-0.75"],
+ ["NTG (亞培)","50mg D5W 250ml · 200",200,"0.25-0.5"],
+ ["Perdipine (2支)","20mg NS 50ml · 400",400,"2.5-15 mg/hr"]
+];
+var wEl=document.getElementById("w");
+try{var sv=localStorage.getItem("cvs_w");if(sv)wEl.value=sv;}catch(e){}
+function render(){
+  var w=parseFloat(wEl.value),ok=w>0;
+  try{if(ok)localStorage.setItem("cvs_w",wEl.value);}catch(e){}
+  var h="";
+  D.forEach(function(d){
+    h+='<tr><td><div class="n">'+d[0]+'</div><div class="s">'+d[1]+'</div></td><td class="r"><span class="v">'+(ok?(d[2]/60/w).toFixed(4):"—")+'</span></td><td class="rm">'+d[3]+'</td></tr>';
+  });
+  h+='<tr class="sep"><td colspan="3">Transamine 原汁 50mg/ml（單位 ml/h）</td></tr>';
+  h+='<tr><td><div class="n">Loading</div><div class="s">10mg/kg · 30min 跑完</div></td><td class="r"><span class="v">'+(ok?(w*10/50*2).toFixed(2):"—")+'</span></td><td class="rm">共 '+(ok?(w*10/50).toFixed(1):"—")+' ml</td></tr>';
+  h+='<tr><td><div class="n">Maintain</div><div class="s">2mg/kg/h</div></td><td class="r"><span class="v">'+(ok?(w*2/50).toFixed(2):"—")+'</span></td><td class="rm">腎功能異常減半<br>'+(ok?(w*2/50/2).toFixed(2):"—")+'</td></tr>';
+  document.getElementById("tb").innerHTML=h;
+}
+wEl.addEventListener("input",render);
+render();
+</script>
+</body>
+</html>
